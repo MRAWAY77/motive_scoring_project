@@ -19,6 +19,7 @@ input_text = []
 motive = []
 non_motive = []
 filt_Motive = []
+filtnon_Motive = []
 num_M = 0
 num_N = 0
 score = 0
@@ -31,6 +32,7 @@ def pos_tag(inputs):
 		for filtered in new_sentence:
 			KW =(filtered[1])
 			POS.append(KW)
+
 
 def count():
 	counter = collections.Counter(POS)
@@ -49,64 +51,119 @@ def PRP_removal(scanning,useful,useless,counts_M,counts_N):
 				counts_N+=1
 			break
 	# useful = '\n'.join(useful)
-	# print(useful)
-	# print(counts_M)
-	# print(useless)
-	# print(counts_N)
+	print(useful)
+	print(counts_M)
+	print(useless)
+	print(counts_N)
+	print('\n')
 
 def point_sys(scanning,points):
 	switcher ={
-	1: 'JJ',
-	2: 'VBD',
-	3: 'VB',
-	4: 'NN',
-	5: 'PRP',
-	6: 'RB',
-	7: 'CC'
+	1: 'PRP',
+	2: '.',
+	3: 'NN',
+	4: 'VB',
+	5: 'VBD',
+	6: 'JJ',
+	7: 'IN',
+	8: 'DT',
+	9: 'NNP',
+	10: 'MD',
+	11: 'TO',
+	12: ',',
+	13: 'RB',
+	14: 'VBP',
+	15: 'CC',
+	16: 'PRP$',
+	17: 'WRB',
+	18: 'VBG',
+	19: 'VBZ',
+	20: 'VBZ',
+	21: 'FW'
 	}
 	for pos in scanning:
 		for tag in pos:
 			for posttag in switcher:
-				if tag[1] == switcher[7]:
-					points*=-1
-				if tag[1] == switcher[6]:
-					points*=-1
-					break
-				if tag[1] == switcher[5]:
-					points+=5
-					break
-				if tag[1] == switcher[4]:
-					points+=4
+				if tag[1] == switcher[1]:
+					points+=21
+				if tag[1] == switcher[2]:
+					points+=0
 					break
 				if tag[1] == switcher[3]:
+					points+=20
+					break
+				if tag[1] == switcher[4]:
+					points+=19
+					break
+				if tag[1] == switcher[5]:
+					points+=0
+					break
+				if tag[1] == switcher[6]:
+					points+=17
+					break
+				if tag[1] == switcher[7]:
+					points+=(-10)
+					break
+				if tag[1] == switcher[8]:
+					points+=15
+				if tag[1] == switcher[9]:
+					points+=14
+					break
+				if tag[1] == switcher[10]:
+					points+=13
+					break
+				if tag[1] == switcher[11]:
+					points+=12
+					break
+				if tag[1] == switcher[12]:
+					points+=0
+					break
+				if tag[1] == switcher[13]:
+					points*=(-2)
+					break
+				if tag[1] == switcher[14]:
+					points+=9
+					break
+				if tag[1] == switcher[15]:
+					points*= (-2)
+				if tag[1] == switcher[16]:
+					points+= (-2)
+					break
+				if tag[1] == switcher[17]:
+					points+=6
+					break
+				if tag[1] == switcher[18]:
+					points+=(-100)
+					break
+				if tag[1] == switcher[19]:
+					points+=4
+					break
+				if tag[1] == switcher[20]:
 					points+=3
 					break
-				if tag[1] == switcher[2]:
+				if tag[1] == switcher[21]:
 					points+=2
-					break
-				if tag[1] == switcher[1]:
-					points+=1
 					break
 		pos.append(int(points))
 		points = 0
 
 def pts_filt(judge,correct,wrong):
-	print(motive)
-	print('\n')
-	print(non_motive)
-	print('\n')
-	for words in correct:
-		if words[-1] >= 7:
-			filt_Motive.append((words))
+	count = 0
+	for tve in correct:
+		if tve[-1] >= 400:
+			filt_Motive.append(tve)
+			count+=1
 	
 	print(filt_Motive)
 	print('\n')
 
-	for words in correct:
-		if words[-1] >= 7:
-			motive.remove(words)
+	for nve in wrong:
+		if nve[-1] >= 300:
+			filt_Motive.append(nve)
+			count+=1
 	
-	print(motive)
+	print(filt_Motive)
+	print(count)
 	print('\n')
 			
 		
@@ -127,7 +184,9 @@ def main_method():
 	point_sys(input_text,score)
 	pts_filt(input_text,motive,non_motive)
 	print(input_text)
+	# print('\n')
 	# print(motive)
+	# print('\n')
 	# print(non_motive)
 
 
