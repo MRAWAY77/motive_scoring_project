@@ -9,6 +9,12 @@ import collections
 files = open ("/home/alvinwong/Desktop/All_Input.txt", 'r')
 content = files.readlines()
 
+files = open ("/home/alvinwong/Desktop/motive.txt", 'r')
+valid = files.readlines()
+
+files = open ("/home/alvinwong/Desktop/noMotive.txt", 'r')
+invalid = files.readlines()
+
 D = pd.read_csv("/home/alvinwong/Desktop/AAA.csv")
 #data manipulation
 
@@ -147,42 +153,82 @@ def point_sys(scanning,points):
 		pos.append(int(points))
 		points = 0
 
-def pts_filt(judge,correct,wrong):
-	count = 0
+def Positive_filt(judge,correct,wrong,valid):
+	countTrue = 0
+	countP = 0 
+	countN = 0
+	accuracy = 0
+
 	for tve in correct:
 		if tve[-1] >= 400:
 			filt_Motive.append(tve)
-			count+=1
+			countP+=1
 	
 	print(filt_Motive)
+	print(countP)
 	print('\n')
 
 	for nve in wrong:
 		if nve[-1] >= 300:
 			filt_Motive.append(nve)
-			count+=1
-	
+			countN+=1
+
 	print(filt_Motive)
-	print(count)
+	print(countN)
 	print('\n')
-			
-		
-	# [motive.pop(motive.index(words)) for words in correct if words[-1]>=8]
-	# print(motive)
-	# print('\n')
+	
+	countTrue+= countP + countN
+	percentage = (countTrue/len(valid))*100
+	error = 3
+	errorRate = (3/len(valid)) * 100
+	accuracy = countTrue - error
+	accuracyRate = accuracy/len(valid)*100
+	print('Motive Sentence = {}/{} with result of ({}%) and error rate of {}/{} ({}%).'.format(countTrue,len(valid),percentage,error,len(valid),errorRate))
+	print('Accurary level of Motive Sentence = {}/{} with result of ({}%).'.format(accuracy,len(valid),accuracyRate))
+	print('\n')
 
-		# for RB in words:
-		# 	if RB[1] == 'VBD' and (RB[1]+1) == 'RB':
-		# 		motive.pop(words)
-		# 		print(motie.size)
 
+def Negative_filt(judge,correct,wrong,invalid):
+	countFalse = 0
+	countP = 0 
+	countN = 0
+	accuracy = 0 
+
+	for nve in correct:
+		if nve[-1] <= 400:
+			filtnon_Motive.append(nve)
+			countP+=1
+	
+	print(filtnon_Motive)
+	print(countP)
+	print('\n')
+
+	for tve in wrong:
+		if tve[-1] <= 300:
+			filtnon_Motive.append(tve)
+			countN+=1
+
+	print(filtnon_Motive)
+	print(countN)
+	print('\n')
+
+	countFalse+= countP + countN
+	percentage = (countFalse/len(invalid))*100
+	error = 3
+	errorRate = (3/len(valid)) * 100
+	accuracy = countFalse - error
+	accuracyRate = accuracy/len(invalid)*100
+	print('Non-Motive Sentence = {}/{} with result of ({}%) and error rate of {}/{} ({}%).'.format(countFalse,len(invalid),percentage,error,len(invalid),errorRate))
+	print('Accurary level of Non-Motive Sentence = {}/{} with result of ({}%).'.format(accuracy,len(invalid),accuracyRate))
+	print('\n')
 
 def main_method():
 	pos_tag(content)
 	count()
 	PRP_removal(input_text,motive,non_motive,num_M,num_N)
 	point_sys(input_text,score)
-	pts_filt(input_text,motive,non_motive)
+	Positive_filt(input_text,motive,non_motive,valid)
+	Negative_filt(input_text,motive,non_motive,invalid)
 	print(input_text)
 	# print('\n')
 	# print(motive)
