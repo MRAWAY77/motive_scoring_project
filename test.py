@@ -29,6 +29,7 @@ filtnon_Motive = []
 num_M = 0
 num_N = 0
 score = 0
+global mistake
 
 def pos_tag(inputs):
 	for sentence in inputs:
@@ -56,7 +57,6 @@ def PRP_removal(scanning,useful,useless,counts_M,counts_N):
 				useless.append(sent)
 				counts_N+=1
 			break
-	# useful = '\n'.join(useful)
 	print(useful)
 	print(counts_M)
 	print(useless)
@@ -153,11 +153,32 @@ def point_sys(scanning,points):
 		pos.append(int(points))
 		points = 0
 
+def Perror_sentence(Input,filtered,valid,mistake):
+	errorP = len(valid)
+	for element in Input:
+		for nodes in filtered:
+			if nodes[-1] == element[-1]:
+				errorP-=1
+
+	mistake = abs(errorP)
+	return mistake
+
+def Nerror_sentence(Input,filtered,invalid,mistake):
+	errorN = len(invalid)
+	for element in Input:
+		for nodes in filtered:
+			if nodes[-1] == element[-1]:
+				errorN-=1
+
+	mistake = abs(errorN)
+	return mistake
+
 def Positive_filt(judge,correct,wrong,valid):
 	countTrue = 0
 	countP = 0 
 	countN = 0
 	accuracy = 0
+	mistake = 0
 
 	for tve in correct:
 		if tve[-1] >= 400:
@@ -175,12 +196,13 @@ def Positive_filt(judge,correct,wrong,valid):
 
 	print(filt_Motive)
 	print(countN)
+	Perror_sentence(judge,filt_Motive,valid,mistake)
 	print('\n')
 	
 	countTrue+= countP + countN
 	percentage = (countTrue/len(valid))*100
-	error = 3
-	errorRate = (3/len(valid)) * 100
+	error = Perror_sentence(judge,filt_Motive,valid,mistake)
+	errorRate = (error/len(valid)) * 100
 	accuracy = countTrue - error
 	accuracyRate = accuracy/len(valid)*100
 	print('Motive Sentence = {}/{} with result of ({}%) and error rate of {}/{} ({}%).'.format(countTrue,len(valid),percentage,error,len(valid),errorRate))
@@ -193,6 +215,7 @@ def Negative_filt(judge,correct,wrong,invalid):
 	countP = 0 
 	countN = 0
 	accuracy = 0 
+	mistake = 0
 
 	for nve in correct:
 		if nve[-1] <= 400:
@@ -209,21 +232,22 @@ def Negative_filt(judge,correct,wrong,invalid):
 			countN+=1
 
 	print(filtnon_Motive)
+	Nerror_sentence(judge,filtnon_Motive,invalid,mistake)
 	print(countN)
 	print('\n')
 
 	countFalse+= countP + countN
 	percentage = (countFalse/len(invalid))*100
-	error = 3
-	errorRate = (3/len(valid)) * 100
+	error = Nerror_sentence(judge,filtnon_Motive,invalid,mistake)
+	errorRate = (error/len(valid)) * 100
 	accuracy = countFalse - error
 	accuracyRate = accuracy/len(invalid)*100
 	print('Non-Motive Sentence = {}/{} with result of ({}%) and error rate of {}/{} ({}%).'.format(countFalse,len(invalid),percentage,error,len(invalid),errorRate))
 	print('Accurary level of Non-Motive Sentence = {}/{} with result of ({}%).'.format(accuracy,len(invalid),accuracyRate))
 	print('\n')
 
-def main_method():
-	pos_tag(content)
+def main_method(subject):
+	pos_tag(subject)
 	count()
 	PRP_removal(input_text,motive,non_motive,num_M,num_N)
 	point_sys(input_text,score)
@@ -236,7 +260,7 @@ def main_method():
 	# print(non_motive)
 
 
-main_method()
+main_method(content)
 
 ######################STILL TESTING WITH FLAWS NOW############################
 	#D.to_csv("Excel_details.csv")
